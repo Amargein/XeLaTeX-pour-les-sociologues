@@ -1,0 +1,156 @@
+\documentclass[notitlepage,onecolumn,twoside,12pt,final]{article}
+
+\usepackage{xltxtra}
+	\setmainfont[Mapping=tex-text, Numbers={OldStyle}, Ligatures={Common}]{Linux Libertine O}
+	\setsansfont{TeX Gyre Adventor}
+	\setmonofont[Scale=0.85]{Anonymous Pro}
+
+\usepackage[a4paper, xetex]{geometry} % hmargin[ext,int],vmargin[top,bottom]
+	\widowpenalty=10000		% pour la gestion des veuves et des orphelines
+	\clubpenalty=10000
+	\raggedbottom
+\usepackage{setspace}
+\usepackage[english,francais]{babel}	% On indique que le document est en français.
+	\newcommand{\anglais}[1]{\foreignlanguage{english}{\emph{#1}}}
+\usepackage[protrusion=true]{microtype}
+\usepackage[autolanguage]{numprint}	% Offre la possibilité d'obtenir un meilleur affichage des grands nombres (avec la commande \nombre)
+\usepackage[threshold=4]{csquotes}
+
+\usepackage[bookmarks=true,hyperindex=true,colorlinks=false,linktoc=all,plainpages=false]{hyperref}	% permet des hyperliens cliquables
+	\urlstyle{tt}
+
+\usepackage{array}  % permet un meilleur affichage des tableaux
+	\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{booktabs}
+
+\usepackage{sectsty}
+	\allsectionsfont{\sffamily \mdseries}
+\usepackage{tocloft}
+	\renewcommand{\cftdot}{}
+	\renewcommand{\cfttoctitlefont}{\Large \sffamily}
+	\renewcommand{\cftsecfont}{\sffamily}
+	\renewcommand{\cftsubsecfont}{\sffamily}
+	\renewcommand{\cftsubsubsecfont}{\sffamily}
+	\renewcommand{\cftparafont}{\sffamily}
+	\renewcommand{\cftsubparafont}{\sffamily}
+\usepackage{abstract}
+	\setlength{\absleftindent}{5em}
+	\setlength{\absrightindent}{5em}
+\setcounter{tocdepth}{5}
+
+\usepackage{metalogo}
+\usepackage{graphicx}
+\usepackage{dirtree}	% Permet d'afficher des arborescences
+\usepackage{listings}
+	\lstset{basicstyle=\small \ttfamily \color{LightSlateGrey},frame=single}
+\usepackage[svgnames]{xcolor}
+	\newcommand{\code}[1]{\texttt{#1}}
+
+\usepackage{imakeidx}	% pour la creation d'index
+	\makeindex
+\usepackage{biblatex}
+	\bibliography{bibliographie}
+\usepackage{fancyref}
+\usepackage[acronym,toc]{glossaries}
+	\makeglossaries
+	\newacronym{tug}{TUG}{\TeX{} User Group}
+
+\title{\sffamily \XeLaTeX pour les sociologues}
+\author{Théo \textsc{Henri}\\{\small Étudiants en master, Université de Poitiers}\\{\small \url{theo@henri-45.fr}}}
+\date{Ébauche --- \emph{Version du \today}}
+
+\begin{document}
+	\maketitle
+
+	\begin{onecolabstract}
+		Cet article s'adresse aux sociologues, et plus particulièrement aux étudiants en sociologie (qu'ils soient en licence comme en master --- voire en thèse), qui voudraient utiliser \XeLaTeX pour la production de leurs écrits.
+	\end{onecolabstract}
+	\vspace{2em}
+	
+	\onehalfspacing
+	
+	Dans le milieu universitaire, comme dans la plupart des autres, lorsqu'il est question de rédiger des documents de manière tapuscrite, c'est bien souvent les traitements de texte classiques qui sont le plus représentés. Qu'il s'agisse de LibreOffice ou de son homologue de chez Microsoft, ces logiciels dits \textsc{Wysiwyg}\footnote{\anglais{What you see is what you get}, littéralement \enquote{Ce que vous voyez est ce que vous obtenez}.} sont les plus souvent rencontrés. Cependant il peut être parfois laborieux d'utiliser ces logiciels pour une production scientifique et c'est dans ce cadre que nous nous proposons d'exposer une solution au travers de l'utilisation de \XeLaTeX.
+	
+	\section{Qu'est-ce que \XeLaTeX{}…}
+		\subsection{On commence par parler de \TeX{} et \LaTeX{}}
+			Dans les années 1970, Donald~E.~Knuth, un mathématicien étatsunien, passionné de typographie et fort mécontent de la manière dont ses formules mathématiques sont imprimées dans les revues scientifiques, décide de prendre les choses en main et de développer un système de composition de formule mathématiques. Ne s'arrêtant pas en si bon chemin, il dessine ses propres polices de caractères et développe au final un système complet de composition de documents scientifiques lui permettant de produire ses articles de A à Z et de les sortir au format PostScript, alors format standard pour l'impression sur les imprimantes de l'époque. C'est ainsi qu'est né le système \TeX{}\footnote{\TeX{} provient du grec τέχνη (\emph{tékhnê}) signifiant \emph{art} ou \emph{science}.} en 1977. Quelques années plus tard, un informaticien, Leslie~Lamport, souhaitant faciliter l'utilisation du système \TeX{} se met à développer un ensemble de macro, simplifiant la production des documents. En 1983 est publiée la première version de \LaTeX{}. Depuis, le logiciel s'est continuellement amélioré.
+		
+		\subsection{Où il est question de compilation}
+			\LaTeX{} est ce qu'on appelle un \emph{langage compilé}. Pour les non-informaticiens (et je sais qu'ils sont nombreux parmi nous) qui voudraient s'enfuir à cet instant précis, je leur demande un peu de courage et éventuellement d'aller prendre un peu l'air avant de se plonger dans cette petite partie légèrement technique. Pour faire simple, il s'agit de décomposer cette expression. Tout d'abord il est question de langage. Un langage, en informatique, est vulgairement une langue qui permet de communiquer avec l'ordinateur. Cette langue comprend un vocabulaire et une syntaxe particulière dont on va se servir pour écrire le \emph{code source}. Ensuite, concernant la compilation, c'est le processus qui permet au programme de lire ce qu'on a écrit. Pour prendre une image largement répandue, le code source (vous vous souvenez, ce qu'on a écrit dans la langue particulière) est en quelque sorte une recette de cuisine (avec une liste des ingrédients puis les différentes manipulations à effectuer) et la compilation correspond à l'équipement de cuisine (par exemple le robot-mixeur, le four, les couteaux) qui permet de sortir un beau gâteau (miam !).
+			
+		\subsection{Ce qui nous amène à \XeLaTeX{}}
+			Bon, mais \XeLaTeX{} dans tout ça ? \enquote{C'est quand même le titre de ton document !}, vous allez me dire. J'y viens. En bon produit anglophone, \LaTeX{} a du mal à digérer les caractères spéciaux utilisés par certaines langues (comme les accents en français, la \emph{ñ} en espagnol ou le \emph{\ss{}} en allemand). Oh bien sûr le programme a été adapté à ces langues, mais cela est plus ou moins laborieux à utiliser. Aussi certains ont jugé plus pratique de repartir sur le travail de Leslie~Lamport et de reconstruire un compilateur (le programme qui permet de passer de la recette au gâteau). Ils se sont alors penchés sur la norme UTF8 (qui permet d'écrire des documents dans toutes les langues du monde, que ce soit du français, de l'arabe ou encore du japonais). Et là encore ils ne se sont pas arrêtés là. Comme les traitements de texte permettent d'utiliser n'importe quelle police de caractère et que \LaTeX le permettait difficilement, ils ont fait en sorte de palier à ce problème et de permettre aux utilisateur de produire leurs documents avec leur police préférée. C'est ainsi qu'on a vu apparaître \LuaTeX{} ou dans notre cas \XeLaTeX{}.
+			
+			\bigskip
+			
+			Je vous rassure, vous n'avez pas du tout besoin de retenir tout ça. Il s'agit plus de culture générale qu'autre chose. Tout ce que vous avez à retenir, c'est les notions de \emph{code source}, de \emph{compilation}, et que \XeLaTeX{} permet d'écrire en français avec la police qu'on préfère.
+			
+		\subsection{Mais en quoi est-ce utile aux sociologues ?}
+			À vrai dire ce n'est pas utile qu'aux seuls sociologues, mais il fallait bien que je titille votre intérêt. Vous pourriez être historien que ça serait tout aussi intéressant en fait. Bien sûr le langage n'a pas été développé au départ pour les sciences humaines, mais pour la production de documents scientifiques les besoins sont proches entre les sciences de l'homme et celles de la natures. On retrouve toujours le besoin de produire un sommaire paginé, de gérer une bibliographie et de réaliser des citations. Les sciences humaines ont ça de particulier qu'on en vient présenter du travail quantitatif (avec des productions statistiques) comme des matériaux qualitatif (au travers de la retranscription d'entretiens). C'est pour répondre à toutes ces besoins que nous avons construit ce document.
+		
+	\section{Les bases du langage}
+		\subsection{Un bon outillage}
+			\subsubsection{L'équipement logiciel}
+				% Les logiciels utiles
+				Avant toute chose, pour utiliser \XeLaTeX{}, il vous faut installer\ldots{} \XeLaTeX ! (Je vous ai vu les deux dans le fond qui suivent pas.) En réalité c'est plutôt une \emph{distribution}\footnote{Une distribution est un ensemble de logiciels incluant un jeux de paquets, parfois accompagné de logiciels spécifiques. Concernant \XeLaTeX, il sera question des paquets dans la section~\ref{subsubsec:paquets}~(p.~\pageref{subsubsec:paquets}).} qu'il vous faut installer. Selon votre système d'exploitation, le processus ne sera pas le même, alors choisissez bien le cas qui vous correspond. (Si vous vous demandez ce qu'est un système d'exploitation, c'est que vous êtes sûrement sous Microsoft Windows --- de la partialité, moi ? Non, jamais !) Une fois la distribution installée, il s'agira de choisir un logiciel permettant d'éditer les codes source de nos documents.
+				
+				\paragraph{\textsc{Gnu}/Linux}
+					La distribution \LaTeX sous \textsc{Gnu}/Linux la plus couramment utilisée est \TeX{}-Live. Pour l'installer il existe deux solutions :
+					\begin{enumerate}
+						\item avec un DVD (en téléchargeant l'\emph{iso}\footnote{\TeX{}-Live peut être récupérée sous forme d'\emph{iso} sur le site du \gls{tug} à cette adresse : \url{http://www.tug.org/texlive/acquire-iso.html}.} ou en achetant un DVD auprès d'une association d'utilisateurs\footnote{L'association française chargée de la promotion de \LaTeX{} est GUTenberg (\url{http://www.gutenberg.eu.org}).}) ;
+						\item par le biais des dépôts de votre distribution \textsc{Gnu}/Linux.
+					\end{enumerate}
+					
+					C'est la seconde option que nous allons privilégier dans notre explication, dans la mesure où la première est relativement simple à mettre en place. \TeX{}-Live étant une distribution, il est possible de ne pas installer l'ensemble des paquets. Le paquet minimum à installer est \code{texlive}. Ensuite, il est conseillé d'installer le support du français \code{texlive-lang-french} ainsi qu'un ensemble de paquets utiles pour une utilisation agréable de \LaTeX{} : \code{texlive-latex-extra}. On peut installer tout ça d'un coup avec la commande suivante :
+					\lstset{language=bash}
+					\begin{verbatim}
+						# apt-get install texlive texlive-lang-french texlive-latex-extra
+					\end{verbatim}
+					
+					Autrement, il est aussi possible d'installer l'ensemble de la distribution \TeX{}-Live avec le paquet \code{texlive-full} (attention, dans ce cas la taille de l'ensemble des paquets est très volumineuse !) Aucune configuration n'est à réaliser durant l'installation de la distribution \TeX{}-Live. Une fois ceci fait, l'utilisation de \XeLaTeX{} peut commencer.
+					
+				\paragraph{Mac OS X}
+					Sous Mac OS X, la distribution utilisée est Mac\TeX{}. Pour l'installer, il suffit d'aller télécharger l'archive \texttt{Mac\TeX{}.pkg} sur le site du \gls{tug} (\url{http://tug.org/mactex}). Une fois le fichier téléchargé, double-cliquez dessus et laissez-vous guider par l'installateur automatique.
+					
+					Une fois la procédure terminée, votre distribution \XeLaTeX{} est prête à être utilisée.
+				\paragraph{Microsoft Windows}
+					Pour utiliser \XeLaTeX{} sous Microsoft~Windows, il vous faut vous diriger vers Mik\TeX{} disponible sur \url{http://miktex.org}. Dans l'onglet \og{}\anglais{Download}\fg{}, téléchargez l'installeur. Une fois récupéré, double-cliquez dessus et allez au bout de l'installation. À l'issue de ça vous serez en mesure de produire vos premiers documents avec \XeLaTeX{}.
+				
+				\paragraph{Share\LaTeX{} et Write\LaTeX{}}
+					Si vous êtes réticent à installer une distribution \XeLaTeX{} sur votre ordinateur (faute de place ou pour toute raison), il existe des sites qui offrent gratuitement un espace pour produire des documents directement en ligne, à la manière des Google documents. Pour cela, deux sites équivalents à retenir :
+					\begin{itemize}
+						\item \url{http://sharelatex.com} ;
+						\item \url{http://writelatex.com}.
+					\end{itemize}
+					
+			\subsubsection{Des packages comme des Lego}\label{subsubsec:paquets}
+				Maintenant que notre distribution est installée, il s'agit de rentrer dans le vif du sujet. Votre distribution est en réalité une agglomération de pa
+				
+			\subsubsection{La compilation en pratique}
+		\subsection{Des commandes à foison}
+			% Les bases
+			% Les premières commandes et les environnements
+		\subsection{La structuration du document}
+			% Le découpage du document
+			% Travailler avec des sous-fichiers
+
+	\section{Bien ranger ses fichiers}
+		\subsection{Une arborescence claire}
+		\subsection{Des fichiers esclaves autonomes}
+		
+	\section{Présenter un sommaire paginé}
+	\section{Construire une bibliographie}
+	\section{Travailler sur les entretiens}
+		\subsection{Déclaration des commandes}
+	\section{Rédiger le rapport final}
+
+	\pagebreak
+	\printglossaries
+	\nocite{*}
+	\printbibliography
+	\addcontentsline{toc}{section}{Références}
+
+	\pagebreak
+	\tableofcontents
+\end{document}
